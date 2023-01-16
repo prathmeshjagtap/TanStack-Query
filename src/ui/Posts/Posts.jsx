@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PostDetail } from "../PostDetails/PostDetail";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const maxPostPage = 10;
 
@@ -12,13 +12,27 @@ async function fetchPosts(currentPage) {
 }
 
 function Posts() {
+	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [selectedPost, setSelectedPost] = useState(null);
 
 	const { data, isLoading, isError, error } = useQuery(
 		["posts", currentPage],
-		() => fetchPosts(currentPage)
+		() => fetchPosts(currentPage),
+		{
+			keepPreviousData: true,
+			staleTime: 2000,
+		}
 	);
+
+	useEffect(() => {
+		if (currentPage < maxPostPage) {
+			const nextpage = currentPage + 1;
+			queryClient.prefetchQuery(["posts", nextpage], () =>
+				fetchPosts(nextpage)
+			);
+		}
+	}, [currentPage, queryClient]);
 
 	if (isLoading) return <div> Loading ....</div>;
 	if (isError) {
