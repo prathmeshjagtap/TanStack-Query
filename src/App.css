@@ -1,4 +1,4 @@
-li {
+/* li {
 	margin-top: 8px;
 }
 
@@ -14,4 +14,9 @@ div.pages {
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
+} */
+.loading {
+	position: fixed;
+	top: 5px;
+	right: 5px;
 }
